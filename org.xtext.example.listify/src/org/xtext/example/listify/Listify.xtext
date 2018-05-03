@@ -1,0 +1,120 @@
+grammar org.xtext.example.listify.Listify with org.eclipse.xtext.common.Terminals
+
+generate listify "http://www.xtext.org/example/listify/Listify"
+
+Listify:
+	(elements += Command)*
+;
+
+Command:
+	Create|Edit  //|Merge 
+;
+
+Create:
+	"create" WSpace "Playlist:/n/t"
+		Name 
+		(contents += Content)*	
+	(command += Command)?
+;
+
+Edit:
+	"edit" WSpace "Playlist" WSpace name=ID":/n/t"
+		(editioncontent += EditionContent)*
+		//(editioncommand += EditionCommand)*
+	(command += Command)?
+	
+;
+	
+/*Merge:
+	
+;*/
+
+Content:
+	Public|Collaborative|Image|Description|Tracks
+;
+
+
+EditionContent:
+	Name|Public|Collaborative|Image|Description|Tracks
+;
+
+/*EditionCommand:
+	Add | Remove | Move
+;*/
+
+Name:
+	"Name:" (WSpace)? name=ID":" (WSpace)? "/n/t"
+;
+
+Public:
+	"Public:" (WSpace)? public?=ID "/n/t" 
+;
+
+Collaborative:
+	"Collaborative:" (WSpace)? collaborative?=ID "/n/t" 
+;
+
+Description:
+	"Description:" (WSpace)? description=ID "/n/t"
+;
+
+Image:
+	"Image:" (WSpace)? image=ID "/n/t"
+;
+
+Tracks:
+	{Tracks}
+	"Tracks:" (WSpace)? "/n/t"
+		(byname+=BYName | byartist+=BYArtist)*
+;
+
+BYName:
+	{BYName}
+	"By" WSpace "Name:/n/t"
+		(track+=Track)*
+;
+
+BYArtist:
+	{BYArtist}
+	"By" WSpace "Artist:/n/t"
+		(artist+=Artist)*
+;
+
+Artist:
+	name=ID ("("(specs += ASpecs)("," (WSpace)? (specs += ASpecs))* ")")?
+;
+
+ASpecs:
+	Popularity | Album | Quantity
+;
+
+Track:
+	name=ID ("("(specs += TSpecs)("," (WSpace)? (specs += TSpecs))* ")")?
+;
+
+TSpecs:
+	Popularity | Album | TArtist | Explicit
+;
+
+Explicit:
+	"Explicit:" (WSpace)? explicit?=ID
+;
+
+TArtist:
+	"Artist:" (WSpace)? artist=ID
+;
+
+Quantity:
+	"Quantity:" (WSpace)? quantity=INT
+;
+
+Album:
+	"Album:"(WSpace)? album=ID
+;
+
+Popularity:
+	"Popularity:" (WSpace)? popularity=RANGE 
+;
+
+WSpace:
+	(' ');
