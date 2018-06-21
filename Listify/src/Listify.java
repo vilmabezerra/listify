@@ -1,29 +1,27 @@
 import org.yaml.snakeyaml.*;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.introspector.PropertyUtils;
-import org.yaml.snakeyaml.representer.Representer;
 
+import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.model_objects.special.SnapshotResult;
 import com.wrapper.spotify.model_objects.specification.Playlist;
-import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import com.wrapper.spotify.requests.data.playlists.CreatePlaylistRequest;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.requests.data.playlists.*;
+import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Scanner;
+
+import javax.swing.plaf.basic.BasicSliderUI.TrackListener;
 
 
 
@@ -35,8 +33,8 @@ public class Listify{
     static String name = null;
     static SpotifyApi spotifyApi = null;
     
-	public static void main (String[] args) throws SpotifyWebApiException {
-		    Map<String, ListPlay> parsed = new HashMap<String, ListPlay>();
+	public static void main (String[] args) throws SpotifyWebApiException, FileNotFoundException {
+		    Map<String, LocalPlaylist> parsed = new HashMap<String, LocalPlaylist>();
 		    String path = "./src/userconfig.txt";
 		    
 		    readConfigFile(path);
@@ -58,12 +56,16 @@ public class Listify{
 		    		}
 		    }*/
 		    
-		    String document = "map:\n  create Playlist:\n     name: blabla\n     description: tchutchu\n  edit Playlist blabla:\n     name: bleble";
+		    //String document = "map:\n  create Playlist:\n     name: blabla\n     description: tchutchu\n  edit Playlist blabla:\n     name: bleble";
+		    String document = new Scanner(new File("./src/example2.ltfy")).useDelimiter("\\Z").next();
+
 		    
 		    System.out.println(document);
+		    
 		    System.out.println("---------------------------------");
 		    parsed = parser(document);
 		    System.out.println(parsed);
+		    
 		    System.out.println("---------------------------------");
 		    interpreter(parsed);
 		    
@@ -71,19 +73,19 @@ public class Listify{
 	}
 	
 	/*Method to parse YAML file*/
-	private static Map<String, ListPlay> parser(String file) {
+	private static Map<String, LocalPlaylist> parser(String file) {
 	    Yaml yaml = new Yaml(new Constructor(CommandsMap.class));
 	    CommandsMap commands = (CommandsMap) yaml.load(file);
-	    Map<String, ListPlay> commandMap = commands.map;
+	    Map<String, LocalPlaylist> commandMap = commands.map;
 	    return commandMap;
 	}
 	
 	/*Method to interpret command just getted by parser*/
-	private static void interpreter(Map<String, ListPlay> commands) {
+	private static void interpreter(Map<String, LocalPlaylist> commands) {
 		ArrayList<String> commandDetail = new ArrayList<String>();
 		int commandKey = 0;
 		
-		for (Map.Entry<String, ListPlay> entry : commands.entrySet())
+		for (Map.Entry<String, LocalPlaylist> entry : commands.entrySet())
 	    {
 			commandDetail.clear();
 	        commandKey = getCommandKey(entry.getKey(), commandDetail);
@@ -108,7 +110,7 @@ public class Listify{
 	    }
 	}
 	
-	private static void createPlaylist(ListPlay listPlay) {
+	private static void createPlaylist(LocalPlaylist listPlay) {
 		
 		System.out.println("Creating..." + listPlay.name);
 		
@@ -119,12 +121,52 @@ public class Listify{
 		try {
 		      final Playlist playlist = createPlaylistRequest.execute();
 		      if (playlist != null) {
-		    	  	System.out.println("Playlist " + playlist.getDescription() +" successfully created");
+		    	  	System.out.println("Playlist ID " + playlist.getId() +" successfully created");
+		    	  	addTracks(playlist, listPlay);
 		      }
 		} catch (IOException | SpotifyWebApiException e) {
 		      System.out.println("Error: " + e.getMessage());
 		}
 		  
+	}
+	
+	private static void addTracks(Playlist playlist, LocalPlaylist listPlay) {
+		/*Searching for tracks*/
+		Paging<Track> tracksPaging = searchTrack(listPlay.tracks.get(0).name);
+		Track[] trackslist = tracksPaging.getItems();
+		System.out.println("TRACK: "+trackslist[0].getId());
+		
+		String[] tracksIds = new String[] {"spotify:track:"+trackslist[0].getId()};
+		/*Adding Tracks*/
+		AddTracksToPlaylistRequest addTracksToPlaylistRequest = spotifyApi
+		          .addTracksToPlaylist(userId, playlist.getId(), tracksIds)
+		          .position(0)
+		          .build();
+		try {
+		      final SnapshotResult snapshotResult = addTracksToPlaylistRequest.execute();
+
+		      System.out.println("Snapshot ID: " + snapshotResult.getSnapshotId());
+		    } catch (IOException | SpotifyWebApiException e) {
+		      System.out.println("Error: " + e.getMessage());
+		    }
+	}
+	
+	private static Paging<Track> searchTrack(String query) {
+		SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
+		          .limit(1)
+		          .offset(0)
+		          .build();
+		
+		try {
+		      final Paging<Track> trackPaging = searchTracksRequest.execute();
+
+		      System.out.println("Total: " + trackPaging.getTotal());
+		      return trackPaging;
+		    } catch (IOException | SpotifyWebApiException e) {
+		      System.out.println("Error: " + e.getMessage());
+		    }
+		
+		return null;
 	}
 	
 	/*Used to get the command that should be executed*/
@@ -206,8 +248,8 @@ public class Listify{
 	}
 	
 	/*Method basically used for tests*/
-	public void showCommandsMap(Map<String, ListPlay> commands) {
-		for (Map.Entry<String, ListPlay> entry : commands.entrySet())
+	public void showCommandsMap(Map<String, LocalPlaylist> commands) {
+		for (Map.Entry<String, LocalPlaylist> entry : commands.entrySet())
 	    {
 	        System.out.println(entry.getKey() + "/" + entry.getValue());
 	    }

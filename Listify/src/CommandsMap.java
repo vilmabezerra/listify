@@ -1,17 +1,17 @@
 import java.util.Map;
 
 public class CommandsMap {
-	public Map<String, ListPlay> map;
+	public Map<String, LocalPlaylist> map;
 	
 	public CommandsMap() {
 	}
 	
-	public Map<String, ListPlay> getMap(){
+	public Map<String, LocalPlaylist> getMap(){
         return map;
     }
 
     /* ... and a public setter */
-    public void setMap(Map<String, ListPlay> map) {
+    public void setMap(Map<String, LocalPlaylist> map) {
         this.map = map;
     }
 }

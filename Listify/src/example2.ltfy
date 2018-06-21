@@ -1,3 +1,8 @@
-edit Playlist Example:
-	Tracks:
-.
+map:
+  create Playlist:
+     name: New One
+     description: f*ck
+     tracks:
+         - name: Love on Top
+  edit Playlist bleble:
+      name: tchutchu
