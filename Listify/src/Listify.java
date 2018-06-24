@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -26,12 +27,19 @@ import javax.swing.plaf.basic.BasicSliderUI.TrackListener;
 
 
 public class Listify{
+	/*Information to access Spotify API*/
 	private static String clientID = "42fc15b62f8c4b60b845daf59b9adf96";
-	private static String clientSecret = "-";
+	private static String clientSecret = "bdcd87b65f2f4065ab740952dccca89c";
+	static SpotifyApi spotifyApi = null;
+	 
+	/*To get from userconfig.txt file*/
 	static String accessToken = null;
     static String userId = null;
     static String name = null;
-    static SpotifyApi spotifyApi = null;
+    
+    /*File to be interpreted*/
+    static String fileName = null;
+   
     
 	public static void main (String[] args) throws SpotifyWebApiException, FileNotFoundException {
 		    Map<String, LocalPlaylist> parsed = new HashMap<String, LocalPlaylist>();
@@ -45,38 +53,54 @@ public class Listify{
 		    		  .setAccessToken(accessToken)
 		    		  .build();
 		    
+		    
 		    //Checking if there are any arguments
-		    /*if (args.length == 0) {
-		    		System.out.println(Error.NO_FILE_ERROR);
+		    if (args.length == 0) {
+		    		System.err.println(Error.NO_FILE_ERROR);
+		    		System.exit(0);
 		    }else {
 		    		if (args.length > 1) {
-		    			System.out.println(Error.MORE_THAN_ONE_ERROR);
+		    			System.err.println(Error.MORE_THAN_ONE_ERROR);
+		    			System.exit(0);
 		    		}else {
-		    			//parsed = parser(args[0]);
+		    			
+		    			checkFileExtension(args[0]);
+		    			fileName = "./src/"+ args[0];
+		    			
+		    			String document = new Scanner(new File(fileName)).useDelimiter("\\Z").next();
+		    			
+		    			System.out.println(document);
+		    		    
+		    		    System.out.println("---------------------------------");
+		    		    
+		    			parsed = parser(document);
+		    			
+		    			interpreter(parsed);
 		    		}
-		    }*/
-		    
-		    //String document = "map:\n  create Playlist:\n     name: blabla\n     description: tchutchu\n  edit Playlist blabla:\n     name: bleble";
-		    String document = new Scanner(new File("./src/example2.ltfy")).useDelimiter("\\Z").next();
-
-		    
-		    System.out.println(document);
-		    
-		    System.out.println("---------------------------------");
-		    parsed = parser(document);
-		    System.out.println(parsed);
-		    
-		    System.out.println("---------------------------------");
-		    interpreter(parsed);
-		    
+		    }
 
 	}
 	
+	private static void checkFileExtension(String file) {
+		String[] parts = file.split("\\.");
+		
+		if((parts[1] != null) && (parts[1].equals("ltfy"))) {
+			return;
+		}else {
+			System.err.println(Error.FILE_EXTENSION_ERROR);
+			System.exit(0);
+		}
+	}
+
 	/*Method to parse YAML file*/
 	private static Map<String, LocalPlaylist> parser(String file) {
+		
 	    Yaml yaml = new Yaml(new Constructor(CommandsMap.class));
+	    
 	    CommandsMap commands = (CommandsMap) yaml.load(file);
-	    Map<String, LocalPlaylist> commandMap = commands.map;
+	    
+	    Map<String, LocalPlaylist> commandMap = commands.listify;
+	    
 	    return commandMap;
 	}
 	
@@ -87,7 +111,6 @@ public class Listify{
 		
 		for (Map.Entry<String, LocalPlaylist> entry : commands.entrySet())
 	    {
-			commandDetail.clear();
 	        commandKey = getCommandKey(entry.getKey(), commandDetail);
 	        
 	        switch (commandKey) {
@@ -102,72 +125,14 @@ public class Listify{
 				break;*/
 			default:
 				//System.out.println(Error.SYNTAXE_ERROR);
+				System.out.println(commandDetail.get(0));
 				break;
 			}
-	        
-			System.out.println(commandDetail.get(0));
-	        
 	    }
+		
+		System.out.println("Hey, "+ name +", check your Spotify account and check the changes you made (:");
 	}
 	
-	private static void createPlaylist(LocalPlaylist listPlay) {
-		
-		System.out.println("Creating..." + listPlay.name);
-		
-		CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(userId, listPlay.name)
-		          .description(listPlay.description)
-		          .build();
-		
-		try {
-		      final Playlist playlist = createPlaylistRequest.execute();
-		      if (playlist != null) {
-		    	  	System.out.println("Playlist ID " + playlist.getId() +" successfully created");
-		    	  	addTracks(playlist, listPlay);
-		      }
-		} catch (IOException | SpotifyWebApiException e) {
-		      System.out.println("Error: " + e.getMessage());
-		}
-		  
-	}
-	
-	private static void addTracks(Playlist playlist, LocalPlaylist listPlay) {
-		/*Searching for tracks*/
-		Paging<Track> tracksPaging = searchTrack(listPlay.tracks.get(0).name);
-		Track[] trackslist = tracksPaging.getItems();
-		System.out.println("TRACK: "+trackslist[0].getId());
-		
-		String[] tracksIds = new String[] {"spotify:track:"+trackslist[0].getId()};
-		/*Adding Tracks*/
-		AddTracksToPlaylistRequest addTracksToPlaylistRequest = spotifyApi
-		          .addTracksToPlaylist(userId, playlist.getId(), tracksIds)
-		          .position(0)
-		          .build();
-		try {
-		      final SnapshotResult snapshotResult = addTracksToPlaylistRequest.execute();
-
-		      System.out.println("Snapshot ID: " + snapshotResult.getSnapshotId());
-		    } catch (IOException | SpotifyWebApiException e) {
-		      System.out.println("Error: " + e.getMessage());
-		    }
-	}
-	
-	private static Paging<Track> searchTrack(String query) {
-		SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
-		          .limit(1)
-		          .offset(0)
-		          .build();
-		
-		try {
-		      final Paging<Track> trackPaging = searchTracksRequest.execute();
-
-		      System.out.println("Total: " + trackPaging.getTotal());
-		      return trackPaging;
-		    } catch (IOException | SpotifyWebApiException e) {
-		      System.out.println("Error: " + e.getMessage());
-		    }
-		
-		return null;
-	}
 	
 	/*Used to get the command that should be executed*/
 	public static int getCommandKey(String key, ArrayList<String> commandDetail) {
@@ -246,8 +211,124 @@ public class Listify{
 			}
 		}
 	}
+
+	/*
+	 * Method used to execute command create
+	 * 
+	 * */
+	private static void createPlaylist(LocalPlaylist listPlay) {
+		
+		System.out.println("Creating Playlist " + listPlay.name +" ...");
+		
+		CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(userId, listPlay.name)
+		          .description(listPlay.description)
+		          .build();
+		
+		try {
+		      final Playlist playlist = createPlaylistRequest.execute();
+		      
+		      if (playlist != null) {
+		    	  	
+		    	  	addTracks(playlist, listPlay);
+		    	  	System.out.println("Playlist ID " + listPlay.getName() +" successfully created!");
+		    	  	
+		      }
+		} catch (IOException | SpotifyWebApiException e) {
+		      System.err.println("Error: " + e.getMessage());
+		      System.exit(0);
+		}
+		  
+	}
 	
-	/*Method basically used for tests*/
+	/*
+	 * Method to add several Tracks to a Playlist
+	 * 
+	 * */
+	private static void addTracks(Playlist playlist, LocalPlaylist listPlay) {
+		Track[] trackslist = null;
+		List<String> tracksIds = new ArrayList<String>();
+		String[] tracksIdsv2 = new String[listPlay.tracks.size()];
+		
+		/*Searching for each track*/
+		for (LocalTrack element : listPlay.tracks) {
+			
+			trackslist = searchTrack(element);
+			
+			if(trackslist != null) {
+				tracksIds.add("spotify:track:"+trackslist[0].getId());
+			}
+		}
+		 tracksIdsv2 = tracksIds.toArray(tracksIdsv2);
+		
+		/*Adding Tracks to Playlist*/
+		AddTracksToPlaylistRequest addTracksToPlaylistRequest = spotifyApi
+		          .addTracksToPlaylist(userId, playlist.getId(), tracksIdsv2)
+		          .position(0)
+		          .build();
+		try {
+		      final SnapshotResult snapshotResult = addTracksToPlaylistRequest.execute();
+	
+		      System.out.println("Snapshot ID: " + snapshotResult.getSnapshotId());
+		    } catch (IOException | SpotifyWebApiException e) {
+		      System.err.println("Error: " + e.getMessage());
+		      System.exit(0);
+		    }
+	}
+	
+	/*
+	 * Method used to search for specific track
+	 * 
+	 * */
+	private static Track[] searchTrack(LocalTrack element) {
+		Track[] trackslist = null;
+		String query = null;
+		query = prepareQuery(element);
+		
+		SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
+		          .limit(1)
+		          .offset(0)
+		          .build();
+		
+		try {
+		      final Paging<Track> trackPaging = searchTracksRequest.execute();
+		      
+		      System.out.println("Total: " + trackPaging.getTotal());
+		      
+		      if(trackPaging.getTotal() == 0) {
+		    	  	System.out.println("There is no song such as "+ query);
+		      }else {
+		    	  trackslist = trackPaging.getItems();
+			      return trackslist;
+		      }
+		      
+		} catch (IOException | SpotifyWebApiException e) {
+		      System.err.println("Error: " + e.getMessage());
+		      System.exit(0);
+		}
+		
+		return null;
+	}
+	
+	private static String prepareQuery (LocalTrack track) {
+		String query = null;
+		
+		if (track.name != null){
+			query = track.name ;
+			if (track.artist != null) {
+				query += " "+ track.artist;
+			}
+		} else {
+			System.err.println(Error.TRACK_NOT_NAMED_ERROR);
+			System.exit(0);
+		}
+		System.out.println("QUERY: "+ query);
+		return query;
+	} 
+
+	/*
+	 * Method basically used for tests
+	 * 
+	 * */
 	public void showCommandsMap(Map<String, LocalPlaylist> commands) {
 		for (Map.Entry<String, LocalPlaylist> entry : commands.entrySet())
 	    {
@@ -255,5 +336,4 @@ public class Listify{
 	    }
 	}
 }
-	
 

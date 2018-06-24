@@ -1,8 +1,16 @@
-map:
-  create Playlist:
-     name: New One
+listify:
+  create Playlist1:
+     name: Test
      description: f*ck
      tracks:
          - name: Love on Top
-  edit Playlist bleble:
-      name: tchutchu
+           artist: Beyoncé
+         - name: Indecente
+           artist: Anitta
+  create Playlist2:
+     name: Test2
+     description: Lorem
+     tracks:
+         - name: Raba
+         - name: Na sua cara
+           artist: Anitta
