@@ -16,9 +16,9 @@ Second is that User need to set userconfig.txt file in order to manage her playl
 
 userconfig.txt file should be written as follow
 
-Token: -
-UserID: 12151182984
-Name: Vilma
+    Token: -
+    UserID: 12151182984
+    Name: Vilma
 
 User should get the Token requested on userconifg.txt file following the steps bellow:
 1. Access the link: https://developer.spotify.com/console/post-playlist-tracks/
