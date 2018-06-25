@@ -20,7 +20,7 @@ userconfig.txt file should be written as follow
     UserID: 12151182984
     Name: Vilma
 
-User should get the Token requested on userconifg.txt file following the steps bellow:
+User should get the **Token** requested on userconifg.txt file following the steps bellow:
 1. Access the link: https://developer.spotify.com/console/post-playlist-tracks/
 2. Click on Get Token
 3. Check the options 
