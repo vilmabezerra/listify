@@ -1,4 +1,6 @@
-# Documentation
+# Listify
+
+## Documentation
 
 This is a language created specially to manage User`s Spotify Playlists.
 
@@ -10,7 +12,7 @@ Listify.java giving your .ltfy file as argument
 Second is that User need to set userconfig.txt file in order to manage her playlists.
 
 
-## User Config file
+### User Config file
 
 userconfig.txt file should be written as follow
 
@@ -30,7 +32,7 @@ User should get the Token requested on userconifg.txt file following the steps b
 5. Copy token shown inside text box
 6. Paste token on userconfig.txt file
     
-## Listify extension file
+### Listify extension file
 
 File with Listify extension (.ltfy) should be given as argument when compiling Listify.java.
 
