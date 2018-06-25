@@ -51,6 +51,6 @@ Listify files should follow YAML syntax in a way similar to the example that fol
                artist: Beyoncé
              - name: Indecente
                artist: Anitta
-      edit Playlist Test:
+      edit Playlist PreviousTest:
          removeTracks: 
              - name: Andança
