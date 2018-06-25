@@ -206,7 +206,8 @@ public class Listify{
 				String[] config = sCurrentLine.split(": ");
 				
 				if (config[1] == null) {
-					System.out.println(Error.CONFIGFILE_ERROR);
+					System.err.println(Error.CONFIGFILE_ERROR);
+					System.exit(0);
 				}else {
 					//System.out.println("config[0] "+config[0]+"   config[1] "+config[1]);
 					if ((config[0].equals("Name")) && (nameB != true)) {
@@ -363,7 +364,7 @@ public class Listify{
 		      PlaylistSimplified[] playlists = playlistSimplifiedPaging.getItems();
 		      return playlists;
 		    } catch (IOException | SpotifyWebApiException e) {
-		      System.out.println("Error: " + e.getMessage());
+		      System.err.println("Error: " + e.getMessage());
 		      System.exit(0);
 		    }
 		return null;

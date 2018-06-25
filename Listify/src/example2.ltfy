@@ -1,5 +1,5 @@
 listify:
-  create Playlist1:
+  create Playlist:
      name: Test2
      description: f*ck
      tracks:
@@ -10,4 +10,3 @@ listify:
   edit Playlist Test:
      removeTracks: 
          - name: tchutchu
-     
