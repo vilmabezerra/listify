@@ -7,4 +7,5 @@ public class Error {
 	public static final String SYNTAXE_ERROR = "Error: Something wrong with the syntaxe. Read documentation to better understanding";
 	public static final String CONFIGFILE_ERROR = "Error: Configuration file does not have the expected structure";
 	public static final String TRACK_NOT_NAMED_ERROR = "Error: All tracks must be named";
+	public static final String NOT_FOUND_PLAYLIST_ERROR = "Error: None of your playlists has this name";
 }

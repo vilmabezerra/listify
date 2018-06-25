@@ -7,6 +7,7 @@ public class LocalPlaylist {
 	 public Boolean publicAccess;
 	 public Boolean collaborative;
 	 public List<LocalTrack> tracks = new ArrayList<>();
+	 public List<LocalTrack> removeTracks = new ArrayList<>();
 	 	
 	 public LocalPlaylist() {}
 

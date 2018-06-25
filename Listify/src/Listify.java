@@ -6,6 +6,8 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SnapshotResult;
 import com.wrapper.spotify.model_objects.specification.Playlist;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
+import com.wrapper.spotify.model_objects.specification.PlaylistTrack;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.requests.data.playlists.*;
@@ -29,7 +31,7 @@ import javax.swing.plaf.basic.BasicSliderUI.TrackListener;
 public class Listify{
 	/*Information to access Spotify API*/
 	private static String clientID = "42fc15b62f8c4b60b845daf59b9adf96";
-	private static String clientSecret = "bdcd87b65f2f4065ab740952dccca89c";
+	private static String clientSecret = "-";
 	static SpotifyApi spotifyApi = null;
 	 
 	/*To get from userconfig.txt file*/
@@ -81,6 +83,10 @@ public class Listify{
 
 	}
 	
+	/*
+	 * Method to check file extension form file given as argument 
+	 * 
+	 * */
 	private static void checkFileExtension(String file) {
 		String[] parts = file.split("\\.");
 		
@@ -92,7 +98,10 @@ public class Listify{
 		}
 	}
 
-	/*Method to parse YAML file*/
+	/*
+	 * Method to parse YAML file
+	 * 
+	 * */
 	private static Map<String, LocalPlaylist> parser(String file) {
 		
 	    Yaml yaml = new Yaml(new Constructor(CommandsMap.class));
@@ -104,38 +113,44 @@ public class Listify{
 	    return commandMap;
 	}
 	
-	/*Method to interpret command just getted by parser*/
+	/*
+	 * Method to interpret command just getted by parser
+	 * 
+	 * */
 	private static void interpreter(Map<String, LocalPlaylist> commands) {
-		ArrayList<String> commandDetail = new ArrayList<String>();
+		String playlist2BEdited = null;
 		int commandKey = 0;
 		
 		for (Map.Entry<String, LocalPlaylist> entry : commands.entrySet())
 	    {
-	        commandKey = getCommandKey(entry.getKey(), commandDetail);
+	        commandKey = getCommandKey(entry.getKey());
 	        
 	        switch (commandKey) {
 			case 0:
 				createPlaylist(entry.getValue());
 				break;
-			/*case 1:
-				editPlaylist();
+			case 1:
+				playlist2BEdited = getPlaylist2bEdited(entry.getKey());
+				editPlaylist(entry.getValue(), playlist2BEdited);
 				break;
-			case 2:
+			/*case 2:
 				mergePlaylists();
 				break;*/
 			default:
 				//System.out.println(Error.SYNTAXE_ERROR);
-				System.out.println(commandDetail.get(0));
 				break;
 			}
 	    }
 		
-		System.out.println("Hey, "+ name +", check your Spotify account and check the changes you made (:");
+		System.out.println("Hey, "+ name +", check your Spotify account out to see the changes you made (:");
 	}
 	
-	
-	/*Used to get the command that should be executed*/
-	public static int getCommandKey(String key, ArrayList<String> commandDetail) {
+
+	/*
+	 * Used to get the command that should be executed
+	 * 
+	 * */
+	public static int getCommandKey(String key) {
 		int i = 0;
 		String[] parts = key.split(" ");
 		
@@ -145,18 +160,32 @@ public class Listify{
 			i++;
 		}
 		
-		if(parts.length > 2 && parts[2] != null) {
-			commandDetail.add(Command.COMMANDS[i]);
-			commandDetail.add(parts[2]);
-		}else {
-			commandDetail.add(Command.COMMANDS[i]);
-			commandDetail.add(null);
-		}
-		
 		return i;
 	}
 	
-	/*Read config file and set accessToken, name and id static variables*/
+	/*
+	 * Method to get the name of the Playlist that need to be edited
+	 * 
+	 * */
+	public static String getPlaylist2bEdited(String key) {
+		String commandDetail = null;
+		String[] parts = key.split(" ");
+		
+		if(parts.length > 2 && parts[2] != null) {
+			
+			commandDetail = parts[2];
+			
+		}else {
+			commandDetail = null;
+		}
+		
+		return commandDetail;
+	}
+	
+	/*
+	 * Read config file and set accessToken, name and id static variables
+	 * 
+	 * */
 	public static void readConfigFile(String path) {
 		String configfile = path;
 		
@@ -241,6 +270,106 @@ public class Listify{
 	}
 	
 	/*
+	 * Method used to execute command edit
+	 * 
+	 * */
+	private static void editPlaylist(LocalPlaylist localPlaylist, String playlist2bEdited) {
+		PlaylistSimplified[] userPlaylists = getListofPlaylists();
+		PlaylistTrack[] listOfTracks = null;
+		String playlistId = null;
+		Playlist playlist = null;
+		
+		System.out.println("Editing "+ playlist2bEdited + " ...");
+		
+		// Search for Playlist to be edited
+		int ite = 0;
+		int quantity = userPlaylists.length;
+		while(ite < quantity) {
+			
+			if(userPlaylists[ite].getName().equals(playlist2bEdited)) {
+				
+				System.out.println("It is this one!");
+				playlistId = userPlaylists[ite].getId();
+				playlist = getPlaylist(playlistId);
+				
+				//Get tracks from Playlist to be edited
+				listOfTracks = getPlaylistTracks(playlistId);
+				
+				//Remove tracks from Playlist, if requested by User
+				if (localPlaylist.removeTracks != null) {
+					removeTracks(playlist, localPlaylist);
+				}
+				
+				//Add tracks to Playlist, if requested by User
+				if (localPlaylist.tracks != null) {
+					addTracks(playlist, localPlaylist);
+				}
+				
+				
+				break;
+			}else {
+				System.out.println("!");
+				ite++;
+			}
+		}
+		
+		if (ite>= quantity) {
+			System.err.println(Error.NOT_FOUND_PLAYLIST_ERROR);
+			System.exit(0);
+		}
+	}
+	
+	/*
+	 * Method to remove several Tracks from a Playlist
+	 * 
+	 * */
+	private static void removeTracks(Playlist playlist, LocalPlaylist localPlaylist) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/*
+	 * Method to get list of the Tracks of a Playlist
+	 * 
+	 * */
+	private static PlaylistTrack[] getPlaylistTracks(String playlistId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * Method to get Playlist object using its spotify ID
+	 * 
+	 * */
+	private static Playlist getPlaylist(String playlistId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	/*
+	 * Method to get list of User`s Playlists
+	 * 
+	 * */
+	private static PlaylistSimplified[] getListofPlaylists() {
+		final GetListOfUsersPlaylistsRequest getListOfUsersPlaylistsRequest = spotifyApi
+		          .getListOfUsersPlaylists(userId)
+		          .limit(10)
+		          .offset(0)
+		          .build();
+		
+		try {
+		      final Paging<PlaylistSimplified> playlistSimplifiedPaging = getListOfUsersPlaylistsRequest.execute();
+		      PlaylistSimplified[] playlists = playlistSimplifiedPaging.getItems();
+		      return playlists;
+		    } catch (IOException | SpotifyWebApiException e) {
+		      System.out.println("Error: " + e.getMessage());
+		      System.exit(0);
+		    }
+		return null;
+	}
+	
+	/*
 	 * Method to add several Tracks to a Playlist
 	 * 
 	 * */
@@ -255,7 +384,7 @@ public class Listify{
 			trackslist = searchTrack(element);
 			
 			if(trackslist != null) {
-				tracksIds.add("spotify:track:"+trackslist[0].getId());
+				tracksIds.add("spotify:track:" + trackslist[0].getId());
 			}
 		}
 		 tracksIdsv2 = tracksIds.toArray(tracksIdsv2);
@@ -268,7 +397,7 @@ public class Listify{
 		try {
 		      final SnapshotResult snapshotResult = addTracksToPlaylistRequest.execute();
 	
-		      System.out.println("Snapshot ID: " + snapshotResult.getSnapshotId());
+		      //System.out.println("Snapshot ID: " + snapshotResult.getSnapshotId());
 		    } catch (IOException | SpotifyWebApiException e) {
 		      System.err.println("Error: " + e.getMessage());
 		      System.exit(0);
@@ -297,8 +426,8 @@ public class Listify{
 		      if(trackPaging.getTotal() == 0) {
 		    	  	System.out.println("There is no song such as "+ query);
 		      }else {
-		    	  trackslist = trackPaging.getItems();
-			      return trackslist;
+		    	  	trackslist = trackPaging.getItems();
+			    return trackslist;
 		      }
 		      
 		} catch (IOException | SpotifyWebApiException e) {
@@ -314,8 +443,13 @@ public class Listify{
 		
 		if (track.name != null){
 			query = track.name ;
+			
 			if (track.artist != null) {
 				query += " "+ track.artist;
+			}
+			
+			if (track.album != null) {
+				query += " " + track.album;
 			}
 		} else {
 			System.err.println(Error.TRACK_NOT_NAMED_ERROR);

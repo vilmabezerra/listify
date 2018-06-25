@@ -1,16 +1,13 @@
 listify:
   create Playlist1:
-     name: Test
+     name: Test2
      description: f*ck
      tracks:
          - name: Love on Top
            artist: Beyoncé
          - name: Indecente
            artist: Anitta
-  create Playlist2:
-     name: Test2
-     description: Lorem
-     tracks:
-         - name: Raba
-         - name: Na sua cara
-           artist: Anitta
+  edit Playlist Test:
+     removeTracks: 
+         - name: tchutchu
+     

@@ -2,8 +2,9 @@
 public class LocalTrack {
 	public String name;
 	public String artist;
-	public Integer popularity;
-	public Boolean explicit;
+	public String album;
+	//public Integer popularity;
+	//public Boolean explicit;
 	
 	public LocalTrack(){}
 	
@@ -11,15 +12,13 @@ public class LocalTrack {
 	public String getName(){
         return name;
     }
+	
     public String getArtist(){
         return artist;
     }
     
-    public Integer getPopularity(){
-        return popularity;
-    }
-    public Boolean getExplicit(){
-        return explicit;
+    public String getAlbum(){
+        return album;
     }
     
     /*SETTERS*/
@@ -31,10 +30,7 @@ public class LocalTrack {
     public void setName(String name) {
         this.name = name;
     }
-    public void setPopularity(Integer pop){
-        this.popularity = pop;
-    }
-    public void setExplicit(Boolean exp){
-        this.explicit = exp;
+    public void setAlbum(String album){
+        this.album = album;
     }
 }
