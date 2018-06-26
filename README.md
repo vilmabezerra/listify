@@ -20,6 +20,7 @@ userconfig.txt file should be written as follow
     UserID: 12151182984
     Name: Vilma
 
+This file should be located inside Project folder in order to be read.
 User should get the **Token** requested to userconifg.txt file by following the steps bellow:
 1. Access the link: https://developer.spotify.com/console/post-playlist-tracks/
 2. Click on Get Token
@@ -68,10 +69,10 @@ it should be applied to a Playlist with a different name.
 ## Action Plan for future versions
 
 - Add command "merge Playlists "
-- Allow user to create playlist with Image, public access, description and some other playlist's information
+- Allow user to create playlist with Image, public access, collaborative and some other playlist's information
 - Allow user to edit name, description, image and some other playlist's information
 - Code Refactoring
-- Do not ask user for providing a userconfig.txt file
+- Do not need to ask user to provide a userconfig.txt file
 
 
 
