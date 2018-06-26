@@ -9,7 +9,7 @@ SnakeYaml library is used to parse Listify files.
 So only files with .ltfy extension shall be interpreted. In order to do so, compile 
 Listify.java giving your .ltfy file as argument.
 
-Second is that User need to set userconfig.txt file in order to manage her playlists.
+Also, User need to set userconfig.txt file in order to be able to manage her playlists.
 
 
 ### User Config file
@@ -20,7 +20,7 @@ userconfig.txt file should be written as follow
     UserID: 12151182984
     Name: Vilma
 
-User should get the **Token** requested on userconifg.txt file following the steps bellow:
+User should get the **Token** requested to userconifg.txt file by following the steps bellow:
 1. Access the link: https://developer.spotify.com/console/post-playlist-tracks/
 2. Click on Get Token
 3. Check the options 
@@ -29,7 +29,7 @@ User should get the **Token** requested on userconifg.txt file following the ste
     - user-library-read
     - user-library-modify
 4. Click on Request Token
-5. Copy token shown inside text box
+5. Copy token shown inside the text box
 6. Paste token on userconfig.txt file
     
 ### Listify extension file
@@ -65,7 +65,7 @@ character to the last word of the command (eg. "create Playlist1:", "create Play
 it should be applied to a Playlist with a different name.
 
 
-##### Action Plan for future versions
+## Action Plan for future versions
 
 - Add command "merge Playlists "
 - Allow user to create playlist with Image, public access, description and some other playlist's information
