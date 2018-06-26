@@ -35,7 +35,7 @@ public class Listify{
 	
 	/*Information to access Spotify API*/
 	private static String clientID = "42fc15b62f8c4b60b845daf59b9adf96";
-	private static String clientSecret = "bdcd87b65f2f4065ab740952dccca89c";
+	private static String clientSecret = "-";
 	static SpotifyApi spotifyApi = null;
 	 
 	/*To get from userconfig.txt file*/
