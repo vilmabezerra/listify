@@ -1,0 +1,16 @@
+listify:
+  create Playlist:
+     name: Test2
+     description: Lorem Ipsum
+     addTracks:
+         - name: Love on Top
+           artist: Beyoncé
+         - name: Indecente
+           artist: Anitta
+  edit Playlist Fertinha a la Vilma:
+     removeTracks: 
+         - name: Indecente
+         - name: Love on Top
+     addTracks:
+         - name: Andança
+           artist: Elis Regina

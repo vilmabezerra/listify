@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalPlaylist {
-	 public String name;
-	 public String description;
-	 public Boolean publicAccess;
-	 public Boolean collaborative;
-	 public List<LocalTrack> tracks = new ArrayList<>();
+	 public String name = null;
+	 public String description = null;
+	 public Boolean publicAccess = null;
+	 public Boolean collaborative = null;
+	 public List<LocalTrack> addTracks = new ArrayList<>();
 	 public List<LocalTrack> removeTracks = new ArrayList<>();
 	 	
 	 public LocalPlaylist() {}
@@ -24,8 +24,11 @@ public class LocalPlaylist {
     public Boolean getCollaborative(){
         return collaborative;
     }
-    public List<LocalTrack> getTracks(){
-        return tracks;
+    public List<LocalTrack> getAddTracks(){
+        return addTracks;
+    }
+    public List<LocalTrack> getRemoveTracks(){
+        return removeTracks;
     }
 
     
@@ -46,8 +49,12 @@ public class LocalPlaylist {
     public void setCollaborative(Boolean collaborative) {
         this.collaborative = collaborative;
     }
-    public void setTracks(List<LocalTrack> tracks) {
-        this.tracks.addAll(tracks);
+    public void setAddTracks(List<LocalTrack> tracks) {
+        this.addTracks.addAll(tracks);
+    }
+    
+    public void setRemoveTracks(List<LocalTrack> tracks) {
+        this.removeTracks.addAll(tracks);
     }
     
     @Override
