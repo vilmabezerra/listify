@@ -2,12 +2,12 @@
 
 ## Documentation
 
-This is a language created specially to manage User`s Spotify Playlists.
+This is a language created specially to manage User`s Spotify Playlists, like editing and creating them.
 
-SnakeYaml is used to parse Listify files.
+SnakeYaml library is used to parse Listify files.
 
-First thing is that only files with .ltfy extension shall be interpreted. In order to do so, compile 
-Listify.java giving your .ltfy file as argument
+So only files with .ltfy extension shall be interpreted. In order to do so, compile 
+Listify.java giving your .ltfy file as argument.
 
 Second is that User need to set userconfig.txt file in order to manage her playlists.
 
@@ -34,7 +34,7 @@ User should get the **Token** requested on userconifg.txt file following the ste
     
 ### Listify extension file
 
-File with Listify extension (.ltfy) should be given as argument when compiling Listify.java.
+File with Listify extension (.ltfy) should be given as argument when compiling Listify.java. The file to be interpreted must be located inside Project folder.
 
 Listify files should follow YAML syntax in a way similar to the example that follows.
 
@@ -51,6 +51,27 @@ Listify files should follow YAML syntax in a way similar to the example that fol
                artist: Beyoncé
              - name: Indecente
                artist: Anitta
-      edit Playlist PreviousTest:
-         removeTracks: 
+      edit Playlist Test #2:
+         addTracks:
              - name: Andança
+               artist: Elis Regine
+         removeTracks: 
+             - name: I Guess
+               artist: ABRA
+               
+
+The commands are interpreted as keys so far. Thus, to repeat a command (create or edit), it should be added another 
+character to the last word of the command (eg. "create Playlist1:", "create Playlist2:"). Or, in case of using command edit,
+it should be applied to a Playlist with a different name.
+
+
+##### Action Plan for future versions
+
+- Add command "merge Playlists "
+- Allow user to create playlist with Image, public access, description and some other playlist's information
+- Allow user to edit name, description, image and some other playlist's information
+- Code Refactoring
+- Do not ask user for providing a userconfig.txt file
+
+
+
