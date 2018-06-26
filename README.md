@@ -1,4 +1,5 @@
-# Listify
+# Listify 
+## version 1.0
 
 ## Documentation
 
@@ -47,7 +48,7 @@ Listify files should follow YAML syntax in a way similar to the example that fol
       create Playlist:
          name: Test
          description: Lorem Ipsum
-         tracks:
+         addTracks:
              - name: Love on Top
                artist: Beyoncé
              - name: Indecente
@@ -65,14 +66,57 @@ The commands are interpreted as keys so far. Thus, to repeat a command (create o
 character to the last word of the command (eg. "create Playlist1:", "create Playlist2:"). Or, in case of using command edit,
 it should be applied to a Playlist with a different name.
 
+### Playlists
+
+Until now the playlists are able to have 
+ - Name
+ - Description 
+ 
+In order to add tracks, it should be used 
+   addTracks:
+Notice that this is possible to be used while editing or creting a playlist.
+
+On the other side, in order to remove tracks, it should be used
+   removeTracks:
+This can be used only while editing the playlists.
+
+All tracks listed bellow these commands  shall be either added or removed from the playlist User has indicated.
+
+### Tracks
+
+Until now the playlists are able to have 
+ - Name
+ - Artist
+ - Album
+ 
+And these information will be used to search for these tracks in order to remove or add them to a playlist.
+
+### Command "create"
+
+This command has as interpretation the creation of a playlist on User' Spotify account. 
+
+The new playlist should be named, however description and the list of tracks to be added are optional.
+
+In case User wants to add Tracks, she must do it as an undordered list preceded by "addTracks:" and using hifens before providing the Track information
+
+### Command "edit"
+
+This command has as interpretation the editing of a playlist on User' Spotify account. 
+
+It should be provided the name of the playlist to be edited. 
+*Notice that it is possible to have more than one playlists with the same name. In this case, the playlist edited will 
+be the one with the most recent creation date*
+
+In case User wants to add or remove Tracks, she must do it as an undordered list preceded by "addTracks:" or "removeTracks:"
+and using hifens before providing the Track information.
 
 ## Action Plan for future versions
 
-- Add command "merge Playlists "
-- Allow user to create playlist with Image, public access, collaborative and some other playlist's information
-- Allow user to edit name, description, image and some other playlist's information
-- Code Refactoring
-- Do not need to ask user to provide a userconfig.txt file
+- Add command "merge Playlists";
+- Allow user to create playlist with Image, public access, collaborative and some other playlist's information;
+- Allow user to edit name, description, image and some other playlist's information;
+- Do some Code Refactoring;
+- Do not need to ask user to provide a userconfig.txt file;
 
 
 
